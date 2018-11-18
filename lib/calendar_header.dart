@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maas/debug.dart';
 
 class CalendarHeader extends StatelessWidget {
   @override
@@ -32,5 +33,5 @@ class _BottomCurveClipper extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => true;
+  bool shouldReclip(CustomClipper<Path> oldClipper) => isDebug;
 }
