@@ -10,54 +10,53 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Maas'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
+  MyHomePage({Key key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+        backgroundColor: Colors.transparent,
+        brightness: Brightness.light,
+        elevation: 0,
+        actions: <Widget>[
+          PopupMenuButton(
+            icon: Icon(
+              Icons.language,
+              color: Colors.grey,
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+            itemBuilder: (context) {
+              return _allLanguages
+                  .map((lang) =>
+                      PopupMenuItem(value: lang, child: Text(lang.toString())))
+                  .toList();
+            },
+          )
+        ],
       ),
     );
   }
 }
+
+/// All the languages supported within the App.
+class _Language {
+  final String _value;
+  const _Language._internal(this._value);
+  toString() => _value;
+
+  static const Nepali = const _Language._internal('Nepali');
+  static const English = const _Language._internal('English');
+}
+
+const _allLanguages = [_Language.Nepali, _Language.English];
