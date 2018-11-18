@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maas/day_dialog.dart';
 
 class CalendarBody extends StatelessWidget {
   @override
@@ -96,7 +97,9 @@ class _CalendarDayCell extends StatelessWidget {
     return Container(
       child: FlatButton(
         child: Text('${date.day}'),
-        onPressed: () {},
+        onPressed: () {
+          showDialog(context: context, builder: (context) => DayDialog());
+        },
         shape: CircleBorder(),
         padding: EdgeInsets.all(0),
       ),
