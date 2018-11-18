@@ -4,12 +4,11 @@ import 'package:maas/debug.dart';
 class CalendarHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final fullHeight = MediaQuery.of(context).size.height;
     return ClipPath(
-      child: FractionallySizedBox(
-        child: Container(
-          color: Colors.grey,
-        ),
-        heightFactor: .45,
+      child: Container(
+        height: fullHeight * .45,
+        color: Colors.grey,
       ),
       clipper: _BottomCurveClipper(),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maas/calendar_body.dart';
 import 'package:maas/calendar_header.dart';
 
 void main() => runApp(MyApp());
@@ -29,11 +30,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          Container(
-            height: double.infinity,
-            color: Colors.white,
-            child: CalendarHeader(),
-            alignment: Alignment.topCenter,
+          Column(
+            children: <Widget>[
+              CalendarHeader(),
+              CalendarBody(),
+            ],
           ),
           SafeArea(child: this._appBar()),
         ],
