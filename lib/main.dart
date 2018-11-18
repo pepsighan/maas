@@ -27,26 +27,44 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        brightness: Brightness.light,
-        elevation: 0,
-        actions: <Widget>[
-          PopupMenuButton(
-            icon: Icon(
-              Icons.language,
-              color: Colors.grey,
-            ),
-            itemBuilder: (context) {
-              return _allLanguages
-                  .map((lang) =>
-                      PopupMenuItem(value: lang, child: Text(lang.toString())))
-                  .toList();
-            },
-          )
+      body: Stack(
+        children: <Widget>[
+          Container(
+            height: double.infinity,
+            color: Colors.white,
+            child: CalendarHeader(),
+            alignment: Alignment.topCenter,
+          ),
+          SafeArea(child: this._appBar()),
         ],
       ),
-      body: CalendarHeader(),
+    );
+  }
+
+  Widget _appBar() {
+    final appBar = AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      actions: <Widget>[
+        PopupMenuButton(
+          icon: Icon(
+            Icons.language,
+            color: Colors.white,
+            semanticLabel: 'Language',
+          ),
+          tooltip: 'Language',
+          itemBuilder: (context) {
+            return _allLanguages
+                .map((lang) =>
+                    PopupMenuItem(value: lang, child: Text(lang.toString())))
+                .toList();
+          },
+        )
+      ],
+    );
+    return Container(
+      height: appBar.preferredSize.height,
+      child: appBar,
     );
   }
 }
