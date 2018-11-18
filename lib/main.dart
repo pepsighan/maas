@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           tooltip: 'Language',
           itemBuilder: (context) {
-            return _allLanguages
+            return _Language.all
                 .map((lang) =>
                     PopupMenuItem(value: lang, child: Text(lang.toString())))
                 .toList();
@@ -76,8 +76,8 @@ class _Language {
   const _Language._internal(this._value);
   toString() => _value;
 
-  static const Nepali = const _Language._internal('Nepali');
+  static const Nepali = const _Language._internal('नेपाली');
   static const English = const _Language._internal('English');
+  
+  static const all = [_Language.Nepali, _Language.English];
 }
-
-const _allLanguages = [_Language.Nepali, _Language.English];
