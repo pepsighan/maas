@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:maas/calendar_body.dart';
 import 'package:maas/calendar_header.dart';
+import 'package:maas/debug.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  // Read debug status.
+  setupDebugStatus();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
