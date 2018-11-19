@@ -5,7 +5,13 @@ class CalendarBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: <Widget>[_CalendarControls(), _CalendarTable()],
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        _CalendarControls(),
+        Expanded(
+          child: _CalendarTable(),
+        )
+      ],
     );
   }
 }
@@ -44,18 +50,33 @@ const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 class _CalendarTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Set the initial page to arbitrary high number, so that the PageView seems
+    // infinitely large.
+    final initialPage = 1073741824;
+
+    return PageView.builder(
+      controller: PageController(initialPage: initialPage),
+      itemBuilder: (context, index) {
+        return _table();
+      },
+    );
+  }
+
+  Widget _table() {
     final headings = weekdays.map((day) => _CalendarHeadingCell(day)).toList();
+
     return Container(
-      margin: EdgeInsets.only(top: 10),
+      margin: EdgeInsets.only(top: 10, left: 20, right: 20),
       child: Table(
-          defaultColumnWidth: FractionColumnWidth(1 / 7),
-          children: <TableRow>[
-            TableRow(children: headings),
-            TableRow(children: _week()),
-            TableRow(children: _week()),
-            TableRow(children: _week()),
-            TableRow(children: _week()),
-          ]),
+        defaultColumnWidth: FractionColumnWidth(1 / 7),
+        children: <TableRow>[
+          TableRow(children: headings),
+          TableRow(children: _week()),
+          TableRow(children: _week()),
+          TableRow(children: _week()),
+          TableRow(children: _week()),
+        ],
+      ),
     );
   }
 

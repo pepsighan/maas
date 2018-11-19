@@ -33,7 +33,9 @@ class _MyHomePageState extends State<MyHomePage> {
           Column(
             children: <Widget>[
               CalendarHeader(),
-              CalendarBody(),
+              Expanded(
+                child: CalendarBody(),
+              ),
             ],
           ),
           SafeArea(child: this._appBar()),
@@ -78,6 +80,6 @@ class _Language {
 
   static const Nepali = const _Language._internal('नेपाली');
   static const English = const _Language._internal('English');
-  
+
   static const all = [_Language.Nepali, _Language.English];
 }
