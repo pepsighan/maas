@@ -2,14 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:maas/day_dialog.dart';
 
 class CalendarBody extends StatelessWidget {
+  // Set the initial page to arbitrary high number, so that the PageView seems
+  // infinitely large.
+  final _pageController = PageController(initialPage: 1073741824);
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        _CalendarControls(),
+        _CalendarControls(
+          onPressedBack: () {
+            _pageController.jumpToPage(_pageController.page.round() - 1);
+          },
+          onPressedNext: () {
+            _pageController.jumpToPage(_pageController.page.round() + 1);
+          },
+        ),
         Expanded(
-          child: _CalendarTable(),
+          child: _CalendarTable(pageController: _pageController),
         )
       ],
     );
@@ -17,6 +28,12 @@ class CalendarBody extends StatelessWidget {
 }
 
 class _CalendarControls extends StatelessWidget {
+  final VoidCallback onPressedBack;
+  final VoidCallback onPressedNext;
+
+  const _CalendarControls({Key key, this.onPressedBack, this.onPressedNext})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final headline = Theme.of(context).textTheme.headline;
@@ -27,7 +44,7 @@ class _CalendarControls extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.chevron_left),
             iconSize: headline.fontSize,
-            onPressed: () {},
+            onPressed: onPressedBack,
           ),
           Text(
             'Month - Year',
@@ -36,7 +53,7 @@ class _CalendarControls extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.chevron_right),
             iconSize: headline.fontSize,
-            onPressed: () {},
+            onPressed: onPressedNext,
           )
         ],
       ),
@@ -48,14 +65,14 @@ class _CalendarControls extends StatelessWidget {
 const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 class _CalendarTable extends StatelessWidget {
+  final PageController pageController;
+
+  const _CalendarTable({Key key, this.pageController}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    // Set the initial page to arbitrary high number, so that the PageView seems
-    // infinitely large.
-    final initialPage = 1073741824;
-
     return PageView.builder(
-      controller: PageController(initialPage: initialPage),
+      controller: pageController,
       itemBuilder: (context, index) {
         return _table();
       },
