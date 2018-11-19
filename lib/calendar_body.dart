@@ -71,29 +71,39 @@ class _CalendarTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageView.builder(
-      controller: pageController,
-      itemBuilder: (context, index) {
-        return _table();
-      },
+    final headings = weekdays.map((day) => _CalendarHeadingCell(day)).toList();
+
+    return Column(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.only(top: 10, left: 20, right: 20),
+          child: Table(
+            defaultColumnWidth: FractionColumnWidth(1 / 7),
+            children: <TableRow>[TableRow(children: headings)],
+          ),
+        ),
+        Expanded(child: _tableBody())
+      ],
     );
   }
 
-  Widget _table() {
-    final headings = weekdays.map((day) => _CalendarHeadingCell(day)).toList();
-
-    return Container(
-      margin: EdgeInsets.only(top: 10, left: 20, right: 20),
-      child: Table(
-        defaultColumnWidth: FractionColumnWidth(1 / 7),
-        children: <TableRow>[
-          TableRow(children: headings),
-          TableRow(children: _week()),
-          TableRow(children: _week()),
-          TableRow(children: _week()),
-          TableRow(children: _week()),
-        ],
-      ),
+  Widget _tableBody() {
+    return PageView.builder(
+      controller: pageController,
+      itemBuilder: (context, index) {
+        return Container(
+          margin: EdgeInsets.only(left: 20, right: 20),
+          child: Table(
+            defaultColumnWidth: FractionColumnWidth(1 / 7),
+            children: <TableRow>[
+              TableRow(children: _week()),
+              TableRow(children: _week()),
+              TableRow(children: _week()),
+              TableRow(children: _week()),
+            ],
+          ),
+        );
+      },
     );
   }
 
