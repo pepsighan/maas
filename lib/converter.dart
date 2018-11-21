@@ -69,12 +69,16 @@ class BSDate {
 
   // Starts from 1943-April-14 AD
   // Ends on 2034-04-13 AD
-  static BSDate fromGregorian(DateTime date) {
+  static BSDate fromGregorian(int year, int month, int day) {
+    final date = DateTime.utc(year, month, day);
     if (!_gregorianInRange(date)) {
       throw DateNotInValidRange();
     }
-    final startGregorianDate =
-        DateTime(startGregorianYear, startGregorianMonth, startGregorianDay);
+    final startGregorianDate = DateTime.utc(
+      startGregorianYear,
+      startGregorianMonth,
+      startGregorianDay,
+    );
     var daysInBetween = date.difference(startGregorianDate).inDays;
     var bsYear = startSaal;
     var bsMonth = 1;
@@ -98,7 +102,7 @@ class BSDate {
   }
 
   DateTime toGregorian() {
-    return DateTime(
+    return DateTime.utc(
       startGregorianYear,
       startGregorianMonth,
       startGregorianDay,
