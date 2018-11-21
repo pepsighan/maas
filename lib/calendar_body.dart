@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:maas/converter.dart';
+import 'package:maas/data/saal.dart';
 import 'package:maas/day_dialog.dart';
+import 'package:quiver/iterables.dart';
+
+int initialPage() {
+  final today = DateTime.now();
+  final bsDate = BSDate.fromGregorian(today.year, today.month, today.day);
+  return (bsDate.year - startSaal) * 12 + bsDate.month - 1;
+}
+
+BSDate bsDateFromPageIndex(int index) {
+  final year = (index ~/ 12) + startSaal;
+  final month = index % 12 + 1;
+  return BSDate(year, month);
+}
 
 class CalendarBody extends StatelessWidget {
-  // Set the initial page to arbitrary high number, so that the PageView seems
-  // infinitely large.
-  final _pageController = PageController(initialPage: 1073741824);
+  final _pageController = PageController(initialPage: initialPage());
 
   @override
   Widget build(BuildContext context) {
@@ -90,28 +103,48 @@ class _CalendarTable extends StatelessWidget {
   Widget _tableBody() {
     return PageView.builder(
       controller: pageController,
+      itemCount: totalSaals() * 12,
       itemBuilder: (context, index) {
+        final bsDate = bsDateFromPageIndex(index);
+        final daysCount = saal(bsDate.year)[bsDate.month - 1];
+        var firstWeekDay = bsDate.toGregorian().weekday;
+        // Make it sunday first and 0-index it.
+        firstWeekDay = firstWeekDay == 7 ? 0 : firstWeekDay;
+        final paddedDays = firstWeekDay + daysCount;
+        final totalWeeks =
+            paddedDays % 7 == 0 ? paddedDays ~/ 7 : (paddedDays ~/ 7) + 1;
+
+        // Pad with empty cells till the first day.
+        final dayCells = List.generate(
+          firstWeekDay,
+          (index) => _CalendarDayCell(),
+        );
+
+        dayCells.addAll(List.generate(
+          daysCount,
+          (index) => _CalendarDayCell(date: bsDate.apply(day: index + 1)),
+        ));
+
+        // Append the table till the last cell.
+        dayCells.addAll(List.generate(
+          (totalWeeks * 7) - paddedDays,
+          (index) => _CalendarDayCell(),
+        ));
+
+        // Parition the cells into their individual rows.
+        final paritionedCells = partition(dayCells, 7)
+            .map((inner) => TableRow(children: inner.cast()))
+            .toList();
+
         return Container(
           margin: EdgeInsets.only(left: 20, right: 20),
           child: Table(
             defaultColumnWidth: FractionColumnWidth(1 / 7),
-            children: <TableRow>[
-              TableRow(children: _week()),
-              TableRow(children: _week()),
-              TableRow(children: _week()),
-              TableRow(children: _week()),
-            ],
+            children: paritionedCells,
           ),
         );
       },
     );
-  }
-
-  List<Widget> _week() {
-    return List.generate(
-        7,
-        (index) =>
-            _CalendarDayCell(date: DateTime.now().add(Duration(days: index))));
   }
 }
 
@@ -136,21 +169,23 @@ class _CalendarHeadingCell extends StatelessWidget {
 }
 
 class _CalendarDayCell extends StatelessWidget {
-  final DateTime date;
+  final BSDate date;
 
   const _CalendarDayCell({Key key, this.date}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: FlatButton(
-        child: Text('${date.day}'),
-        onPressed: () {
-          showDialog(context: context, builder: (context) => DayDialog());
-        },
-        shape: CircleBorder(),
-        padding: EdgeInsets.all(0),
-      ),
+      child: date != null
+          ? FlatButton(
+              child: Text('${date.day}'),
+              onPressed: () {
+                showDialog(context: context, builder: (context) => DayDialog());
+              },
+              shape: CircleBorder(),
+              padding: EdgeInsets.all(0),
+            )
+          : null,
       height: 50,
     );
   }

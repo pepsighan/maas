@@ -104,3 +104,7 @@ List<int> saal(int year) {
   }
   return _saal[year - startSaal];
 }
+
+int totalSaals() {
+  return _saal.length;
+}
