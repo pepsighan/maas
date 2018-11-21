@@ -1,4 +1,5 @@
 import 'package:maas/data/saal.dart';
+import 'package:maas/data/translations.dart';
 import 'package:quiver/core.dart';
 
 class BSDate {
@@ -17,12 +18,57 @@ class BSDate {
       month == other.month &&
       day == other.day;
 
+  bool operator <(BSDate other) =>
+      year < other.year ||
+      (year == other.year && month < other.month) ||
+      (year == other.year && month == other.month && day < other.day);
+
+  Duration operator -(BSDate other) {
+    if (this < other) {
+      return -(_difference(other, this));
+    } else {
+      return _difference(this, other);
+    }
+  }
+
+  static Duration _difference(BSDate lhs, BSDate rhs) {
+    var marker = rhs.apply();
+    int days = 0;
+    while (true) {
+      final daysInCurrentMonth = saal(marker.year)[marker.month - 1];
+
+      if (lhs.year == rhs.year && lhs.month == rhs.month) {
+        // If both the start and end dates are in the same month of the year.
+        days = lhs.day - rhs.day;
+        break;
+      } else if (marker.year == rhs.year && marker.month == rhs.month) {
+        // Add the remaining days of the first month.
+        days = daysInCurrentMonth - marker.day;
+      } else if (marker.year == lhs.year && marker.month == lhs.month) {
+        // Add the remaining days of the last month.
+        days += lhs.day;
+        break;
+      } else {
+        // Add all the days of the inner months.
+        days += daysInCurrentMonth;
+      }
+
+      if (marker.month == 12) {
+        marker.month = 1;
+        marker.year += 1;
+      } else {
+        marker.month += 1;
+      }
+    }
+    return Duration(days: days);
+  }
+
   int get hashCode => hash3(year, month, day);
 
   String toString() => 'BSDate { year: $year, month: $month, day: $day }';
 
-  // Starts from 1943-April-14
-  // Ends on ....
+  // Starts from 1943-April-14 AD
+  // Ends on 2034-04-13 AD
   static BSDate fromGregorian(DateTime date) {
     if (!_gregorianInRange(date)) {
       throw DateNotInValidRange();
@@ -49,6 +95,22 @@ class BSDate {
       }
     }
     return BSDate(bsYear, bsMonth, bsDay);
+  }
+
+  DateTime toGregorian() {
+    return DateTime(
+      startGregorianYear,
+      startGregorianMonth,
+      startGregorianDay,
+    ).add(this - BSDate());
+  }
+
+  String monthText() {
+    return bsMonths[month - 1];
+  }
+
+  BSDate apply({int year, int month, int day}) {
+    return BSDate(year ?? this.year, month ?? this.month, day ?? this.day);
   }
 }
 
