@@ -175,15 +175,22 @@ class _CalendarDayCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isToday = date?.isToday();
     return Container(
       child: date != null
           ? FlatButton(
-              child: Text('${date.day}'),
+              child: Text(
+                '${date.day}',
+                style: TextStyle(
+                  color: isToday ? Colors.white : null,
+                ),
+              ),
               onPressed: () {
                 showDialog(context: context, builder: (context) => DayDialog());
               },
               shape: CircleBorder(),
               padding: EdgeInsets.all(0),
+              color: isToday ? Colors.blue : null,
             )
           : null,
       height: 50,

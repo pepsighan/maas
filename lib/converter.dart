@@ -2,6 +2,9 @@ import 'package:maas/data/saal.dart';
 import 'package:maas/data/translations.dart';
 import 'package:quiver/core.dart';
 
+final _now = DateTime.now();
+final _today = DateTime.utc(_now.year, _now.month, _now.day);
+
 class BSDate {
   int year;
   int month;
@@ -116,6 +119,8 @@ class BSDate {
   BSDate apply({int year, int month, int day}) {
     return BSDate(year ?? this.year, month ?? this.month, day ?? this.day);
   }
+
+  bool isToday() => this.toGregorian() == _today;
 }
 
 class DateNotInValidRange extends Error {}
