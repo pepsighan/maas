@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:maas/converter.dart';
 import 'package:maas/data/saal.dart';
 import 'package:maas/day_dialog.dart';
+import 'package:maas/store.dart';
 import 'package:quiver/iterables.dart';
 
 int initialPage() {
@@ -40,6 +42,8 @@ class CalendarBody extends StatelessWidget {
   }
 }
 
+typedef void SetPageCallback(int page);
+
 class _CalendarControls extends StatelessWidget {
   final VoidCallback onPressedBack;
   final VoidCallback onPressedNext;
@@ -59,9 +63,15 @@ class _CalendarControls extends StatelessWidget {
             iconSize: headline.fontSize,
             onPressed: onPressedBack,
           ),
-          Text(
-            'Month - Year',
-            style: headline,
+          StoreConnector<GlobalState, int>(
+            converter: (store) => store.state.calendarPageIndex,
+            builder: (context, page) {
+              final bsDate = bsDateFromPageIndex(page);
+              return Text(
+                '${bsDate.monthText()} - ${bsDate.year}',
+                style: headline,
+              );
+            },
           ),
           IconButton(
             icon: Icon(Icons.chevron_right),
@@ -101,49 +111,61 @@ class _CalendarTable extends StatelessWidget {
   }
 
   Widget _tableBody() {
-    return PageView.builder(
-      controller: pageController,
-      itemCount: totalSaals() * 12,
-      itemBuilder: (context, index) {
-        final bsDate = bsDateFromPageIndex(index);
-        final daysCount = saal(bsDate.year)[bsDate.month - 1];
-        var firstWeekDay = bsDate.toGregorian().weekday;
-        // Make it sunday first and 0-index it.
-        firstWeekDay = firstWeekDay == 7 ? 0 : firstWeekDay;
-        final paddedDays = firstWeekDay + daysCount;
-        final totalWeeks =
-            paddedDays % 7 == 0 ? paddedDays ~/ 7 : (paddedDays ~/ 7) + 1;
-
-        // Pad with empty cells till the first day.
-        final dayCells = List.generate(
-          firstWeekDay,
-          (index) => _CalendarDayCell(),
-        );
-
-        dayCells.addAll(List.generate(
-          daysCount,
-          (index) => _CalendarDayCell(date: bsDate.apply(day: index + 1)),
-        ));
-
-        // Append the table till the last cell.
-        dayCells.addAll(List.generate(
-          (totalWeeks * 7) - paddedDays,
-          (index) => _CalendarDayCell(),
-        ));
-
-        // Parition the cells into their individual rows.
-        final paritionedCells = partition(dayCells, 7)
-            .map((inner) => TableRow(children: inner.cast()))
-            .toList();
-
-        return Container(
-          margin: EdgeInsets.only(left: 20, right: 20),
-          child: Table(
-            defaultColumnWidth: FractionColumnWidth(1 / 7),
-            children: paritionedCells,
-          ),
+    return StoreConnector<GlobalState, SetPageCallback>(
+      converter: (store) {
+        return (int page) {
+          store.dispatch(SetCalendarPageIndex(page));
+        };
+      },
+      builder: (context, callback) {
+        return PageView.builder(
+          controller: pageController,
+          itemCount: totalSaals() * 12,
+          itemBuilder: _tableBodyPage,
+          onPageChanged: callback,
         );
       },
+    );
+  }
+
+  Widget _tableBodyPage(context, index) {
+    final bsDate = bsDateFromPageIndex(index);
+    final daysCount = saal(bsDate.year)[bsDate.month - 1];
+    var firstWeekDay = bsDate.toGregorian().weekday;
+    // Make it sunday first and 0-index it.
+    firstWeekDay = firstWeekDay == 7 ? 0 : firstWeekDay;
+    final paddedDays = firstWeekDay + daysCount;
+    final totalWeeks =
+        paddedDays % 7 == 0 ? paddedDays ~/ 7 : (paddedDays ~/ 7) + 1;
+
+    // Pad with empty cells till the first day.
+    final dayCells = List.generate(
+      firstWeekDay,
+      (index) => _CalendarDayCell(),
+    );
+
+    dayCells.addAll(List.generate(
+      daysCount,
+      (index) => _CalendarDayCell(date: bsDate.apply(day: index + 1)),
+    ));
+
+    // Append the table till the last cell.
+    dayCells.addAll(List.generate(
+      (totalWeeks * 7) - paddedDays,
+      (index) => _CalendarDayCell(),
+    ));
+
+    // Parition the cells into their individual rows.
+    final paritionedCells = partition(dayCells, 7)
+        .map((inner) => TableRow(children: inner.cast()))
+        .toList();
+
+    return Container(
+      margin: EdgeInsets.only(left: 20, right: 20),
+      child: Table(
+        defaultColumnWidth: FractionColumnWidth(1 / 7),
+        children: paritionedCells,
+      ),
     );
   }
 }

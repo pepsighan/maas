@@ -1,23 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:maas/calendar_body.dart';
 import 'package:maas/calendar_header.dart';
 import 'package:maas/debug.dart';
+import 'package:maas/store.dart';
+import 'package:redux/redux.dart';
 
 void main() {
   // Read debug status.
   setupDebugStatus();
-  runApp(MyApp());
+
+  final store = Store<GlobalState>(
+    mainReducer,
+    initialState: GlobalState(
+      calendarPageIndex: initialPage(),
+    ),
+  );
+
+  runApp(MyApp(
+    store: store,
+  ));
 }
 
 class MyApp extends StatelessWidget {
+  final Store<GlobalState> store;
+
+  const MyApp({Key key, this.store}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Maas',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return StoreProvider<GlobalState>(
+      store: store,
+      child: MaterialApp(
+        title: 'Maas',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: MyHomePage(),
       ),
-      home: MyHomePage(),
     );
   }
 }
