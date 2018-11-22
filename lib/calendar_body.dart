@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:maas/converter.dart';
@@ -5,6 +7,8 @@ import 'package:maas/data/saal.dart';
 import 'package:maas/day_dialog.dart';
 import 'package:maas/store.dart';
 import 'package:quiver/iterables.dart';
+
+final maxPageIndex = totalSaals() * 12;
 
 int initialPage() {
   final today = DateTime.now();
@@ -19,24 +23,13 @@ BSDate bsDateFromPageIndex(int index) {
 }
 
 class CalendarBody extends StatelessWidget {
-  final _pageController = PageController(initialPage: initialPage());
-
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        _CalendarControls(
-          onPressedBack: () {
-            _pageController.jumpToPage(_pageController.page.round() - 1);
-          },
-          onPressedNext: () {
-            _pageController.jumpToPage(_pageController.page.round() + 1);
-          },
-        ),
-        Expanded(
-          child: _CalendarTable(pageController: _pageController),
-        )
+        _CalendarControls(),
+        Expanded(child: _CalendarTable())
       ],
     );
   }
@@ -45,40 +38,46 @@ class CalendarBody extends StatelessWidget {
 typedef void SetPageCallback(int page);
 
 class _CalendarControls extends StatelessWidget {
-  final VoidCallback onPressedBack;
-  final VoidCallback onPressedNext;
-
-  const _CalendarControls({Key key, this.onPressedBack, this.onPressedNext})
-      : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     final headline = Theme.of(context).textTheme.headline;
     return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          IconButton(
-            icon: Icon(Icons.chevron_left),
-            iconSize: headline.fontSize,
-            onPressed: onPressedBack,
-          ),
-          StoreConnector<GlobalState, int>(
-            converter: (store) => store.state.calendarPageIndex,
-            builder: (context, page) {
-              final bsDate = bsDateFromPageIndex(page);
-              return Text(
-                '${bsDate.monthText()} - ${bsDate.year}',
-                style: headline,
-              );
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.chevron_right),
-            iconSize: headline.fontSize,
-            onPressed: onPressedNext,
-          )
-        ],
+      child: StoreConnector<GlobalState, SetPageCallback>(
+        converter: (store) {
+          return (int delta) =>
+              store.dispatch(SetCalendarPageIndexDelta(delta));
+        },
+        builder: (context, callback) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.chevron_left),
+                iconSize: headline.fontSize,
+                onPressed: () {
+                  callback(-1);
+                },
+              ),
+              StoreConnector<GlobalState, int>(
+                converter: (store) => store.state.calendarPageIndex,
+                builder: (context, page) {
+                  final bsDate = bsDateFromPageIndex(page);
+                  return Text(
+                    '${bsDate.monthText()} - ${bsDate.year}',
+                    style: headline,
+                  );
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.chevron_right),
+                iconSize: headline.fontSize,
+                onPressed: () {
+                  callback(1);
+                },
+              )
+            ],
+          );
+        },
       ),
       padding: EdgeInsets.symmetric(horizontal: 10),
     );
@@ -87,10 +86,30 @@ class _CalendarControls extends StatelessWidget {
 
 const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-class _CalendarTable extends StatelessWidget {
-  final PageController pageController;
+class _CalendarTable extends StatefulWidget {
+  @override
+  _CalendarTableState createState() => _CalendarTableState();
+}
 
-  const _CalendarTable({Key key, this.pageController}) : super(key: key);
+class _CalendarTableState extends State<_CalendarTable> {
+  final PageController _pageController =
+      PageController(initialPage: initialPage());
+
+  StreamSubscription<GlobalState> _subscription;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _subscription = StoreProvider.of<GlobalState>(context)
+        .onChange
+        .listen(_handlePageChange);
+  }
+
+  void _handlePageChange(GlobalState state) {
+    if (state.calendarPageIndex != _pageController.page.round()) {
+      _pageController.jumpToPage(state.calendarPageIndex);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,8 +138,8 @@ class _CalendarTable extends StatelessWidget {
       },
       builder: (context, callback) {
         return PageView.builder(
-          controller: pageController,
-          itemCount: totalSaals() * 12,
+          controller: _pageController,
+          itemCount: maxPageIndex,
           itemBuilder: _tableBodyPage,
           onPageChanged: callback,
         );
@@ -167,6 +186,12 @@ class _CalendarTable extends StatelessWidget {
         children: paritionedCells,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 }
 
