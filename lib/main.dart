@@ -74,6 +74,17 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: Colors.transparent,
       elevation: 0,
       actions: <Widget>[
+        StoreConnector<GlobalState, VoidCallback>(
+          converter: (store) {
+            return () => store.dispatch(SetCalendarPageIndex(initialPage()));
+          },
+          builder: (context, callback) {
+            return IconButton(
+              icon: Icon(Icons.today),
+              onPressed: callback,
+            );
+          },
+        ),
         PopupMenuButton(
           icon: Icon(
             Icons.language,
