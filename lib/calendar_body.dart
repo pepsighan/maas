@@ -233,7 +233,10 @@ class _CalendarDayCell extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                showDialog(context: context, builder: (context) => DayDialog());
+                showDialog(
+                  context: context,
+                  builder: (context) => DayDialog(date: date),
+                );
               },
               shape: CircleBorder(),
               padding: EdgeInsets.all(0),

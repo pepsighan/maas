@@ -49,3 +49,22 @@ const bsMonths = [
   'Falgun',
   'Chaitra'
 ];
+
+const _gregorianMonths = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'
+];
+
+String gregorianMonths(int month) {
+  return _gregorianMonths[month - 1];
+}

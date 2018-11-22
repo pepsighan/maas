@@ -1,15 +1,24 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:maas/converter.dart';
+import 'package:maas/data/translations.dart';
 
 const borderRadius = 15.0;
 
 class DayDialog extends StatelessWidget {
+  final BSDate date;
+
+  const DayDialog({Key key, this.date}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
       child: Column(
-        children: <Widget>[_DayBadge(), Flexible(child: _Events())],
+        children: <Widget>[
+          _DayBadge(date: date),
+          Flexible(child: _Events()),
+        ],
         mainAxisSize: MainAxisSize.min,
       ),
       shape: RoundedRectangleBorder(
@@ -20,34 +29,35 @@ class DayDialog extends StatelessWidget {
 }
 
 class _DayBadge extends StatelessWidget {
+  final BSDate date;
+
+  const _DayBadge({Key key, this.date}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final largeText = textTheme.display4;
+    final largeText = textTheme.display4.apply(color: Colors.grey[800]);
     final mediumText = textTheme.display1.apply(fontWeightDelta: -1);
+    final smallText = textTheme.title.apply(
+      fontWeightDelta: -2,
+      color: Colors.grey[400],
+    );
+
+    final greg = date.toGregorian();
+
     return Container(
       padding: EdgeInsets.all(20),
       child: Column(
         children: <Widget>[
-          Container(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '12',
-              style: mediumText,
-              textAlign: TextAlign.right,
-            ),
-          ),
           Text(
-            '30',
+            '${date.day}',
             style: largeText,
           ),
-          Container(
-            alignment: Alignment.centerRight,
-            child: Text(
-              'Dashami',
-              style: mediumText,
-            ),
-          )
+          Text(date.monthText(), style: mediumText),
+          Text(
+            '${greg.day} ${gregorianMonths(greg.month)} ${greg.year}',
+            style: smallText,
+          ),
         ],
       ),
     );
