@@ -1,3 +1,3 @@
 # Maas
 
-A Bikram Sambat Calendar app.
+A Bikram Samvat Calendar app.
