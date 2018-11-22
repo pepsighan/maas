@@ -26,10 +26,9 @@ class CalendarBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         _CalendarControls(),
-        Expanded(child: _CalendarTable())
+        Flexible(child: _CalendarTable()),
       ],
     );
   }
@@ -116,6 +115,7 @@ class _CalendarTableState extends State<_CalendarTable> {
     final headings = weekdays.map((day) => _CalendarHeadingCell(day)).toList();
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Container(
           margin: EdgeInsets.only(top: 10, left: 20, right: 20),
@@ -124,7 +124,7 @@ class _CalendarTableState extends State<_CalendarTable> {
             children: <TableRow>[TableRow(children: headings)],
           ),
         ),
-        Expanded(child: _tableBody())
+        Flexible(child: _tableBody()),
       ],
     );
   }

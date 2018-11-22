@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:maas/calendar_body.dart';
-import 'package:maas/calendar_header.dart';
 import 'package:maas/debug.dart';
 import 'package:maas/store.dart';
 import 'package:redux/redux.dart';
@@ -53,25 +52,17 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              CalendarHeader(),
-              Expanded(
-                child: CalendarBody(),
-              ),
-            ],
-          ),
-          SafeArea(child: this._appBar()),
-        ],
-      ),
+      appBar: this._appBar(),
+      body: CalendarBody(),
     );
   }
 
   Widget _appBar() {
-    final appBar = AppBar(
+    final iconTheme = IconThemeData(color: Colors.grey[700]);
+
+    return AppBar(
       backgroundColor: Colors.transparent,
+      iconTheme: iconTheme,
       elevation: 0,
       actions: <Widget>[
         StoreConnector<GlobalState, VoidCallback>(
@@ -88,7 +79,6 @@ class _MyHomePageState extends State<MyHomePage> {
         PopupMenuButton(
           icon: Icon(
             Icons.language,
-            color: Colors.white,
             semanticLabel: 'Language',
           ),
           tooltip: 'Language',
@@ -100,10 +90,6 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         )
       ],
-    );
-    return Container(
-      height: appBar.preferredSize.height,
-      child: appBar,
     );
   }
 }
