@@ -16,7 +16,7 @@ int initialPage() {
   return (bsDate.year - startSaal) * 12 + bsDate.month - 1;
 }
 
-BSDate bsDateFromPageIndex(int index) {
+BSDate _bsDateFromPageIndex(int index) {
   final year = (index ~/ 12) + startSaal;
   final month = index % 12 + 1;
   return BSDate(year, month);
@@ -61,7 +61,7 @@ class _CalendarControls extends StatelessWidget {
               StoreConnector<GlobalState, int>(
                 converter: (store) => store.state.calendarPageIndex,
                 builder: (context, page) {
-                  final bsDate = bsDateFromPageIndex(page);
+                  final bsDate = _bsDateFromPageIndex(page);
                   return Text(
                     '${bsDate.monthText()} - ${bsDate.year}',
                     style: headline,
@@ -148,7 +148,7 @@ class _CalendarTableState extends State<_CalendarTable> {
   }
 
   Widget _tableBodyPage(context, index) {
-    final bsDate = bsDateFromPageIndex(index);
+    final bsDate = _bsDateFromPageIndex(index);
     final daysCount = saal(bsDate.year)[bsDate.month - 1];
     var firstWeekDay = bsDate.toGregorian().weekday;
     // Make it sunday first and 0-index it.
