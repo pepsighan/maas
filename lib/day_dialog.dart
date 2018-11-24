@@ -41,24 +41,28 @@ class _DayBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final greg = date.toGregorian();
     final _isToday = isToday(greg);
+    final _isSaturday = isSaturday(greg);
     final textTheme = Theme.of(context).textTheme;
     final largeText = textTheme.display4.apply(
-      color: _isToday ? Colors.grey[50] : Colors.grey[800],
+      color: _isToday || _isSaturday ? Colors.grey[50] : Colors.grey[800],
     );
     final mediumText = textTheme.display1.apply(
       fontWeightDelta: -1,
-      color: _isToday ? Colors.grey[200] : Colors.grey[800],
+      color: _isToday || _isSaturday ? Colors.grey[200] : Colors.grey[800],
     );
     final smallText = textTheme.title.apply(
       fontWeightDelta: -2,
-      color: _isToday ? Colors.blue[200] : Colors.grey[400],
+      color: _isSaturday
+          ? Colors.red[200]
+          : _isToday ? Colors.blue[200] : Colors.grey[400],
     );
 
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-          color: _isToday ? Colors.blue : Colors.white,
+          color:
+              _isSaturday ? Colors.red : _isToday ? Colors.blue : Colors.white,
           borderRadius: BorderRadius.only(
             topLeft: _circularRadius,
             topRight: _circularRadius,
