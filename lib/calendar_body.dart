@@ -112,7 +112,16 @@ class _CalendarTableState extends State<_CalendarTable> {
 
   @override
   Widget build(BuildContext context) {
-    final headings = weekdays.map((day) => _CalendarHeadingCell(day)).toList();
+    final headings = weekdays
+        .asMap()
+        .map((index, day) => MapEntry(
+            index,
+            _CalendarHeadingCell(
+              day,
+              isHoliday: index == 6,
+            )))
+        .values
+        .toList();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -197,9 +206,11 @@ class _CalendarTableState extends State<_CalendarTable> {
 
 class _CalendarHeadingCell extends StatelessWidget {
   final String day;
+  final bool isHoliday;
 
-  const _CalendarHeadingCell(this.day, {Key key})
+  const _CalendarHeadingCell(this.day, {Key key, this.isHoliday})
       : assert(day != null),
+        assert(isHoliday != null),
         super(key: key);
 
   @override
@@ -209,7 +220,7 @@ class _CalendarHeadingCell extends StatelessWidget {
       child: Text(
         this.day,
         textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.grey[700]),
+        style: TextStyle(color: isHoliday ? Colors.red : Colors.grey[700]),
       ),
     );
   }
@@ -222,14 +233,17 @@ class _CalendarDayCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isToday = date?.isToday();
+    final greg = date?.toGregorian();
+    final _isToday = isToday(greg);
+    final _isSaturday = isSaturday(greg);
     return Container(
       child: date != null
           ? FlatButton(
               child: Text(
                 '${date.day}',
                 style: TextStyle(
-                  color: isToday ? Colors.white : null,
+                  color:
+                      _isToday ? Colors.white : _isSaturday ? Colors.red : null,
                 ),
               ),
               onPressed: () {
@@ -240,7 +254,7 @@ class _CalendarDayCell extends StatelessWidget {
               },
               shape: CircleBorder(),
               padding: EdgeInsets.all(0),
-              color: isToday ? Colors.blue : null,
+              color: _isToday ? _isSaturday ? Colors.red : Colors.blue : null,
             )
           : null,
       height: 50,

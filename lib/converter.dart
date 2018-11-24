@@ -146,3 +146,11 @@ bool _gregorianInRange(DateTime date) {
               date.month == endGregorianMonth &&
               date.day <= endGregorianDay));
 }
+
+bool isToday(DateTime date) {
+  return date == _today;
+}
+
+bool isSaturday(DateTime date) {
+  return date?.weekday == 6;
+}
