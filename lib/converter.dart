@@ -119,8 +119,6 @@ class BSDate {
   BSDate apply({int year, int month, int day}) {
     return BSDate(year ?? this.year, month ?? this.month, day ?? this.day);
   }
-
-  bool isToday() => this.toGregorian() == _today;
 }
 
 class DateNotInValidRange extends Error {}
