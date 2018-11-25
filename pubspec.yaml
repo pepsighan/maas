@@ -21,3 +21,8 @@ dev_dependencies:
 # The following section is specific to Flutter.
 flutter:
   uses-material-design: true
+
+  fonts:
+    - family: LohitNepali
+      fonts:
+        - asset: assets/LohitNepali/Lohit-Nepali.ttf

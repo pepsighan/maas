@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
         title: 'Maas',
         theme: ThemeData(
           primarySwatch: Colors.blue,
+          fontFamily: 'LohitNepali',
         ),
         home: MyHomePage(),
       ),

@@ -53,13 +53,11 @@ class _DayBadge extends StatelessWidget {
           : Colors.grey[800],
     );
     final mediumText = textTheme.display1.apply(
-      fontWeightDelta: -1,
       color: _isToday || _isSaturday || _isHoliday
           ? Colors.grey[200]
           : Colors.grey[800],
     );
     final smallText = textTheme.title.apply(
-      fontWeightDelta: -2,
       color: _isSaturday || _isHoliday
           ? Colors.red[200]
           : _isToday ? Colors.blue[200] : Colors.grey[400],
@@ -85,8 +83,8 @@ class _DayBadge extends StatelessWidget {
           Text(date.monthText(), style: mediumText),
           Text(
             '${intoDevnagariNumeral(greg.day)} '
-            '${gregorianMonths(greg.month)} '
-            '${intoDevnagariNumeral(greg.year)}',
+                '${gregorianMonths(greg.month)} '
+                '${intoDevnagariNumeral(greg.year)}',
             style: smallText,
           ),
         ],
