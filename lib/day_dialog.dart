@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:maas/converter.dart';
+import 'package:maas/data/events/events.dart';
 import 'package:maas/data/translations.dart';
 
 final _radius = 15.0;
@@ -23,7 +24,7 @@ class DayDialog extends StatelessWidget {
         child: Column(
           children: <Widget>[
             _DayBadge(date: date),
-            Flexible(child: _Events()),
+            Flexible(child: _Events(date: date)),
           ],
           mainAxisSize: MainAxisSize.min,
         ),
@@ -42,17 +43,24 @@ class _DayBadge extends StatelessWidget {
     final greg = date.toGregorian();
     final _isToday = isToday(greg);
     final _isSaturday = isSaturday(greg);
+    final _events = events(date);
+    final _isHoliday = _events != null ? _events['isHoliday'] == true : false;
+
     final textTheme = Theme.of(context).textTheme;
     final largeText = textTheme.display4.apply(
-      color: _isToday || _isSaturday ? Colors.grey[50] : Colors.grey[800],
+      color: _isToday || _isSaturday || _isHoliday
+          ? Colors.grey[50]
+          : Colors.grey[800],
     );
     final mediumText = textTheme.display1.apply(
       fontWeightDelta: -1,
-      color: _isToday || _isSaturday ? Colors.grey[200] : Colors.grey[800],
+      color: _isToday || _isSaturday || _isHoliday
+          ? Colors.grey[200]
+          : Colors.grey[800],
     );
     final smallText = textTheme.title.apply(
       fontWeightDelta: -2,
-      color: _isSaturday
+      color: _isSaturday || _isHoliday
           ? Colors.red[200]
           : _isToday ? Colors.blue[200] : Colors.grey[400],
     );
@@ -61,8 +69,9 @@ class _DayBadge extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-          color:
-              _isSaturday ? Colors.red : _isToday ? Colors.blue : Colors.white,
+          color: _isSaturday || _isHoliday
+              ? Colors.red
+              : _isToday ? Colors.blue : Colors.white,
           borderRadius: BorderRadius.only(
             topLeft: _circularRadius,
             topRight: _circularRadius,
@@ -85,8 +94,22 @@ class _DayBadge extends StatelessWidget {
 }
 
 class _Events extends StatelessWidget {
+  final BSDate date;
+
+  const _Events({Key key, @required this.date})
+      : assert(date != null),
+        super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    final _events = events(date);
+    final hasEvents = _events != null
+        ? (_events['eventsNp'] as List<String>).length != 0
+        : false;
+    final eventsList = _events != null
+        ? _events['eventsNp'] as List<String>
+        : ['कुनै कार्यक्रम छैन'];
+
     return Container(
       padding: EdgeInsets.only(bottom: _radius),
       decoration: BoxDecoration(
@@ -97,9 +120,18 @@ class _Events extends StatelessWidget {
         ),
       ),
       child: ListView.separated(
-        itemCount: 5,
+        itemCount: eventsList.length,
         shrinkWrap: true,
-        itemBuilder: (context, index) => ListTile(title: Text('Diwali')),
+        itemBuilder: (context, index) {
+          final text = Text(
+            eventsList[index],
+            style: TextStyle(color: !hasEvents ? Colors.grey : null),
+          );
+
+          return ListTile(
+            title: hasEvents ? text : Container(child: Center(child: text)),
+          );
+        },
         separatorBuilder: (context, index) => Divider(height: 1),
       ),
     );
