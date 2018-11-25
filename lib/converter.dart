@@ -113,7 +113,7 @@ class BSDate {
   }
 
   String monthText() {
-    return bsMonths[month - 1];
+    return devnagariMonths[month - 1];
   }
 
   BSDate apply({int year, int month, int day}) {

@@ -79,12 +79,14 @@ class _DayBadge extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Text(
-            '${date.day}',
+            intoDevnagariNumeral(date.day),
             style: largeText,
           ),
           Text(date.monthText(), style: mediumText),
           Text(
-            '${greg.day} ${gregorianMonths(greg.month)} ${greg.year}',
+            '${intoDevnagariNumeral(greg.day)} '
+            '${gregorianMonths(greg.month)} '
+            '${intoDevnagariNumeral(greg.year)}',
             style: smallText,
           ),
         ],

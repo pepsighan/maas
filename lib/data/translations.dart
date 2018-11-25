@@ -16,7 +16,7 @@ const devnagariWeekDaysShort = [
   'मंगल',
   'बुध',
   'बिही',
-  'शुक्',
+  'शुक्र',
   'शनि'
 ];
 
@@ -35,36 +35,31 @@ const devnagariMonths = [
   'चैत',
 ];
 
-const bsMonths = [
-  'Baishakh',
-  'Jestha',
-  'Ashad',
-  'Shrawan',
-  'Bhadra',
-  'Ashwin',
-  'Kartik',
-  'Mangshir',
-  'Poush',
-  'Magh',
-  'Falgun',
-  'Chaitra'
-];
-
 const _gregorianMonths = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December'
+  'जनवरी',
+  'फरवरी',
+  'मार्च',
+  'अप्रेल',
+  'मई',
+  'जून',
+  'जुलाई',
+  'अगस्त',
+  'सितम्बर',
+  'अक्टुबर',
+  'नवम्बर',
+  'दिसम्बर'
 ];
 
 String gregorianMonths(int month) {
   return _gregorianMonths[month - 1];
+}
+
+String intoDevnagariNumeral(int number) {
+  var devnagari = number == 0 ? devnagariNumerals[0] : '';
+  while (number != 0) {
+    final digit = number % 10;
+    devnagari = '${devnagariNumerals[digit]}$devnagari';
+    number = number ~/ 10;
+  }
+  return devnagari;
 }

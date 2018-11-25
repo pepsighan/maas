@@ -5,6 +5,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:maas/converter.dart';
 import 'package:maas/data/events/events.dart';
 import 'package:maas/data/saal.dart';
+import 'package:maas/data/translations.dart';
 import 'package:maas/day_dialog.dart';
 import 'package:maas/store.dart';
 import 'package:quiver/iterables.dart';
@@ -63,7 +64,7 @@ class _CalendarControls extends StatelessWidget {
                 builder: (context, page) {
                   final bsDate = _bsDateFromPageIndex(page);
                   return Text(
-                    '${bsDate.monthText()} - ${bsDate.year}',
+                    '${bsDate.monthText()} - ${intoDevnagariNumeral(bsDate.year)}',
                     style: headline,
                   );
                 },
@@ -83,8 +84,6 @@ class _CalendarControls extends StatelessWidget {
     );
   }
 }
-
-const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 class _CalendarTable extends StatefulWidget {
   @override
@@ -113,7 +112,7 @@ class _CalendarTableState extends State<_CalendarTable> {
 
   @override
   Widget build(BuildContext context) {
-    final headings = weekdays
+    final headings = devnagariWeekDaysShort
         .asMap()
         .map((index, day) => MapEntry(
             index,
@@ -243,7 +242,7 @@ class _CalendarDayCell extends StatelessWidget {
       child: date != null
           ? FlatButton(
               child: Text(
-                '${date.day}',
+                intoDevnagariNumeral(date.day),
                 style: TextStyle(
                   color: _isToday
                       ? Colors.white

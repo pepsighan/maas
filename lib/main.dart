@@ -73,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
             return IconButton(
               icon: Icon(Icons.today),
               onPressed: callback,
-              tooltip: 'Today',
+              tooltip: 'आज',
             );
           },
         )
