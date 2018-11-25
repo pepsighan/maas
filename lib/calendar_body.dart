@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:maas/converter.dart';
+import 'package:maas/data/events/events.dart';
 import 'package:maas/data/saal.dart';
 import 'package:maas/day_dialog.dart';
 import 'package:maas/store.dart';
@@ -236,14 +237,17 @@ class _CalendarDayCell extends StatelessWidget {
     final greg = date?.toGregorian();
     final _isToday = isToday(greg);
     final _isSaturday = isSaturday(greg);
+    final _events = events(date);
+    final isHoliday = _events != null ? _events['isHoliday'] == true : false;
     return Container(
       child: date != null
           ? FlatButton(
               child: Text(
                 '${date.day}',
                 style: TextStyle(
-                  color:
-                      _isToday ? Colors.white : _isSaturday ? Colors.red : null,
+                  color: _isToday
+                      ? Colors.white
+                      : _isSaturday || isHoliday ? Colors.red : null,
                 ),
               ),
               onPressed: () {
@@ -254,7 +258,9 @@ class _CalendarDayCell extends StatelessWidget {
               },
               shape: CircleBorder(),
               padding: EdgeInsets.all(0),
-              color: _isToday ? _isSaturday ? Colors.red : Colors.blue : null,
+              color: _isToday
+                  ? _isSaturday || isHoliday ? Colors.red : Colors.blue
+                  : null,
             )
           : null,
       height: 50,

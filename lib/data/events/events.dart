@@ -4,7 +4,7 @@ import 'package:maas/data/events/2075.dart';
 
 Map<String, Object> events(BSDate date) {
   var saal;
-  switch (date.year) {
+  switch (date?.year) {
     case 2074:
       saal = saal2074;
       break;
