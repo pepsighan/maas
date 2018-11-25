@@ -76,33 +76,8 @@ class _MyHomePageState extends State<MyHomePage> {
               tooltip: 'Today',
             );
           },
-        ),
-        PopupMenuButton(
-          icon: Icon(
-            Icons.language,
-            semanticLabel: 'Language',
-          ),
-          tooltip: 'Language',
-          itemBuilder: (context) {
-            return _Language.all
-                .map((lang) =>
-                    PopupMenuItem(value: lang, child: Text(lang.toString())))
-                .toList();
-          },
         )
       ],
     );
   }
-}
-
-/// All the languages supported within the App.
-class _Language {
-  final String _value;
-  const _Language._internal(this._value);
-  toString() => _value;
-
-  static const Nepali = const _Language._internal('नेपाली');
-  static const English = const _Language._internal('English');
-
-  static const all = [_Language.Nepali, _Language.English];
 }
