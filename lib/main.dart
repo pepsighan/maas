@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:maas/calendar_body.dart';
+import 'package:maas/date_jump.dart';
 import 'package:maas/debug.dart';
 import 'package:maas/store.dart';
 import 'package:redux/redux.dart';
@@ -77,6 +78,16 @@ class _MyHomePageState extends State<MyHomePage> {
               tooltip: 'आज',
             );
           },
+        ),
+        IconButton(
+          icon: Icon(Icons.directions_run),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => DateJumpDialog(),
+            );
+          },
+          tooltip: 'अर्को मितिमा जाने',
         )
       ],
     );
