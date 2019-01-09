@@ -166,6 +166,13 @@ class _DateFormState extends State<_DateForm> {
       ),
       dateOnly: true,
       editable: false,
+      onChanged: (date) {
+        this.setState(() {
+          _year = date.year;
+          _month = date.month;
+          _day = date.day;
+        });
+      },
     );
   }
 }
