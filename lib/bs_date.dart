@@ -3,11 +3,18 @@ import 'package:maas/data/translations.dart';
 import 'package:maas/date_utils.dart';
 import 'package:quiver/core.dart';
 
+/// Represents a Bikram Samvat Date.
 class BSDate {
+  /// BS Year starting from 2000-2090.
   int year;
+
+  /// BS Month ranging from 1-12.
   int month;
+
+  /// Days in a BS month.
   int day;
 
+  /// Constructor for a new Bikram Samvat Date.
   BSDate([this.year = startSaal, this.month = 1, this.day = 1])
       : assert(year >= startSaal && year <= endSaal),
         assert(month >= 1 && month <= 12),
@@ -68,16 +75,17 @@ class BSDate {
 
   String toString() => 'BSDate { year: $year, month: $month, day: $day }';
 
-  // Starts from 1943-April-14 AD
-  // Ends on 2034-04-13 AD
+  /// Construct a BSDate from a given Gregorian Date.
+  ///
+  /// Throws a [DateNotInValidRange] if the provided date is not in supported
+  /// gregorian date range.
   static BSDate fromGregorian(DateTime gregDate) {
     assert(gregDate != null);
-    final _date = gregDate.toUtc();
-
-    final date = DateTime.utc(_date.year, _date.month, _date.day);
+    final date = DateUtils.convertToCalendarDay(gregDate);
     if (!DateUtils.gregorianInRange(date)) {
       throw DateNotInValidRange();
     }
+
     final startGregorianDate = DateUtils.gregorianStartDate();
     var daysInBetween = date.difference(startGregorianDate).inDays;
     var bsYear = startSaal;
@@ -101,17 +109,21 @@ class BSDate {
     return BSDate(bsYear, bsMonth, bsDay);
   }
 
+  /// Convert to a gregorian date.
   DateTime toGregorian() {
     return DateUtils.gregorianStartDate().add(this - BSDate());
   }
 
+  /// The textual month of Bikram Samvat.
   String monthText() {
     return devnagariMonths[month - 1];
   }
 
+  /// Copy and modify the current instance with the provided values.
   BSDate apply({int year, int month, int day}) {
     return BSDate(year ?? this.year, month ?? this.month, day ?? this.day);
   }
 }
 
+/// Throw this error when the given date is not in a valid range.
 class DateNotInValidRange extends Error {}
