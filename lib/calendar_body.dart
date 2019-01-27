@@ -1,18 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
+import 'package:maas/calendar_model.dart';
 import 'package:maas/converter.dart';
 import 'package:maas/data/events/events.dart';
 import 'package:maas/data/saal.dart';
 import 'package:maas/data/translations.dart';
 import 'package:maas/day_dialog.dart';
-import 'package:maas/store.dart';
 import 'package:quiver/iterables.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 final maxPageIndex = totalSaals() * 12;
 
-int initialPage() {
+int get initialPage {
   final today = DateTime.now();
   final bsDate = BSDate.fromGregorian(today.year, today.month, today.day);
   return (bsDate.year - startSaal) * 12 + bsDate.month - 1;
@@ -43,38 +43,25 @@ class _CalendarControls extends StatelessWidget {
   Widget build(BuildContext context) {
     final headline = Theme.of(context).textTheme.headline;
     return Container(
-      child: StoreConnector<GlobalState, SetPageCallback>(
-        converter: (store) {
-          return (int delta) =>
-              store.dispatch(SetCalendarPageIndexDelta(delta));
-        },
-        builder: (context, callback) {
+      child: ScopedModelDescendant<CalendarModel>(
+        builder: (context, child, model) {
+          final bsDate = _bsDateFromPageIndex(model.calendarPage);
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               IconButton(
                 icon: Icon(Icons.chevron_left),
                 iconSize: headline.fontSize,
-                onPressed: () {
-                  callback(-1);
-                },
+                onPressed: () => model.decrementCalendarPage(),
               ),
-              StoreConnector<GlobalState, int>(
-                converter: (store) => store.state.calendarPageIndex,
-                builder: (context, page) {
-                  final bsDate = _bsDateFromPageIndex(page);
-                  return Text(
-                    '${bsDate.monthText()} - ${intoDevnagariNumeral(bsDate.year)}',
-                    style: headline,
-                  );
-                },
+              Text(
+                '${bsDate.monthText()} - ${intoDevnagariNumeral(bsDate.year)}',
+                style: headline,
               ),
               IconButton(
                 icon: Icon(Icons.chevron_right),
                 iconSize: headline.fontSize,
-                onPressed: () {
-                  callback(1);
-                },
+                onPressed: () => model.incrementCalendarPage(),
               )
             ],
           );
@@ -92,21 +79,21 @@ class _CalendarTable extends StatefulWidget {
 
 class _CalendarTableState extends State<_CalendarTable> {
   final PageController _pageController =
-      PageController(initialPage: initialPage());
+      PageController(initialPage: initialPage);
 
-  StreamSubscription<GlobalState> _subscription;
+  CalendarModel _calendarModel;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _subscription = StoreProvider.of<GlobalState>(context)
-        .onChange
-        .listen(_handlePageChange);
+  void initState() {
+    super.initState();
+
+    _calendarModel = ScopedModel.of<CalendarModel>(context);
+    _calendarModel.addListener(_handlePageChange);
   }
 
-  void _handlePageChange(GlobalState state) {
-    if (state.calendarPageIndex != _pageController.page.round()) {
-      _pageController.jumpToPage(state.calendarPageIndex);
+  void _handlePageChange() {
+    if (_calendarModel.calendarPage != _pageController.page.round()) {
+      _pageController.jumpToPage(_calendarModel.calendarPage);
     }
   }
 
@@ -139,18 +126,13 @@ class _CalendarTableState extends State<_CalendarTable> {
   }
 
   Widget _tableBody() {
-    return StoreConnector<GlobalState, SetPageCallback>(
-      converter: (store) {
-        return (int page) {
-          store.dispatch(SetCalendarPageIndex(page));
-        };
-      },
-      builder: (context, callback) {
+    return ScopedModelDescendant<CalendarModel>(
+      builder: (context, child, model) {
         return PageView.builder(
           controller: _pageController,
           itemCount: maxPageIndex,
           itemBuilder: _tableBodyPage,
-          onPageChanged: callback,
+          onPageChanged: (page) => model.setCalendarPage(page),
         );
       },
     );
@@ -199,7 +181,7 @@ class _CalendarTableState extends State<_CalendarTable> {
 
   @override
   void dispose() {
-    _subscription.cancel();
+    _calendarModel.removeListener(_handlePageChange);
     super.dispose();
   }
 }

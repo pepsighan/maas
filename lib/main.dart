@@ -1,36 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:maas/calendar_body.dart';
+import 'package:maas/calendar_model.dart';
 import 'package:maas/date_jump.dart';
 import 'package:maas/debug.dart';
-import 'package:maas/store.dart';
-import 'package:redux/redux.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 void main() {
   // Read debug status.
   setupDebugStatus();
 
-  final store = Store<GlobalState>(
-    mainReducer,
-    initialState: GlobalState(
-      calendarPageIndex: initialPage(),
-    ),
-  );
-
-  runApp(MyApp(
-    store: store,
-  ));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final Store<GlobalState> store;
-
-  const MyApp({Key key, this.store}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return StoreProvider<GlobalState>(
-      store: store,
+    return ScopedModel<CalendarModel>(
+      model: CalendarModel(),
       child: MaterialApp(
         title: 'Maas',
         theme: ThemeData(
@@ -67,14 +53,11 @@ class _MyHomePageState extends State<MyHomePage> {
       iconTheme: iconTheme,
       elevation: 0,
       actions: <Widget>[
-        StoreConnector<GlobalState, VoidCallback>(
-          converter: (store) {
-            return () => store.dispatch(SetCalendarPageIndex(initialPage()));
-          },
-          builder: (context, callback) {
+        ScopedModelDescendant<CalendarModel>(
+          builder: (context, child, model) {
             return IconButton(
               icon: Icon(Icons.today),
-              onPressed: callback,
+              onPressed: () => model.setCalendarPage(initialPage),
               tooltip: 'आज',
             );
           },
