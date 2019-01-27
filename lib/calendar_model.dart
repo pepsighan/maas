@@ -1,4 +1,3 @@
-import 'package:maas/converter.dart';
 import 'package:maas/date_utils.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -32,7 +31,7 @@ class CalendarModel extends Model {
 
   /// Checks the date if it is in the gregorian range.
   void _setDateIfInRange(DateTime date) {
-    if (gregorianInRange(date)) {
+    if (DateUtils.gregorianInRange(date)) {
       _calendarMonth = date;
       notifyListeners();
     }

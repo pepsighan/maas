@@ -1,9 +1,7 @@
 import 'package:maas/data/saal.dart';
 import 'package:maas/data/translations.dart';
+import 'package:maas/date_utils.dart';
 import 'package:quiver/core.dart';
-
-final _now = DateTime.now();
-final _today = DateTime.utc(_now.year, _now.month, _now.day);
 
 class BSDate {
   int year;
@@ -72,16 +70,15 @@ class BSDate {
 
   // Starts from 1943-April-14 AD
   // Ends on 2034-04-13 AD
-  static BSDate fromGregorian(int year, int month, int day) {
-    final date = DateTime.utc(year, month, day);
-    if (!gregorianInRange(date)) {
+  static BSDate fromGregorian(DateTime gregDate) {
+    assert(gregDate != null);
+    final _date = gregDate.toUtc();
+
+    final date = DateTime.utc(_date.year, _date.month, _date.day);
+    if (!DateUtils.gregorianInRange(date)) {
       throw DateNotInValidRange();
     }
-    final startGregorianDate = DateTime.utc(
-      startGregorianYear,
-      startGregorianMonth,
-      startGregorianDay,
-    );
+    final startGregorianDate = DateUtils.gregorianStartDate();
     var daysInBetween = date.difference(startGregorianDate).inDays;
     var bsYear = startSaal;
     var bsMonth = 1;
@@ -105,11 +102,7 @@ class BSDate {
   }
 
   DateTime toGregorian() {
-    return DateTime.utc(
-      startGregorianYear,
-      startGregorianMonth,
-      startGregorianDay,
-    ).add(this - BSDate());
+    return DateUtils.gregorianStartDate().add(this - BSDate());
   }
 
   String monthText() {
@@ -122,33 +115,3 @@ class BSDate {
 }
 
 class DateNotInValidRange extends Error {}
-
-const startGregorianYear = 1943;
-const startGregorianMonth = 4;
-const startGregorianDay = 14;
-
-const endGregorianYear = 2034;
-const endGregorianMonth = 4;
-const endGregorianDay = 13;
-
-bool gregorianInRange(DateTime date) {
-  return ((date.year == startGregorianYear &&
-              date.month == startGregorianMonth &&
-              date.day >= startGregorianDay) ||
-          (date.year == startGregorianYear &&
-              date.month > startGregorianMonth) ||
-          date.year > startGregorianYear) &&
-      (date.year < endGregorianYear ||
-          (date.year == endGregorianYear && date.month < endGregorianMonth) ||
-          (date.year == endGregorianYear &&
-              date.month == endGregorianMonth &&
-              date.day <= endGregorianDay));
-}
-
-bool isToday(DateTime date) {
-  return date == _today;
-}
-
-bool isSaturday(DateTime date) {
-  return date?.weekday == 6;
-}

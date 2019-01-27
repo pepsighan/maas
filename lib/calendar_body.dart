@@ -4,22 +4,24 @@ import 'package:maas/converter.dart';
 import 'package:maas/data/events/events.dart';
 import 'package:maas/data/saal.dart';
 import 'package:maas/data/translations.dart';
+import 'package:maas/date_utils.dart';
 import 'package:maas/day_dialog.dart';
 import 'package:quiver/iterables.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-final maxPageIndex = totalSaals() * 12;
+/// The max pages allowed in the month-wise page view.
+final _maxPageIndex = totalSaals() * 12;
 
-int get initialPage {
-  final today = DateTime.now();
-  final bsDate = BSDate.fromGregorian(today.year, today.month, today.day);
-  return (bsDate.year - startSaal) * 12 + bsDate.month - 1;
-}
-
+/// Convert the page view index to BSDate.
 BSDate _bsDateFromPageIndex(int index) {
   final year = (index ~/ 12) + startSaal;
   final month = index % 12 + 1;
   return BSDate(year, month);
+}
+
+/// Convert BSDate to page view index.
+int _bsDateToPageIndex(BSDate date) {
+  return ((date.year - startSaal) * 12) + date.month - 1;
 }
 
 class CalendarBody extends StatelessWidget {
@@ -34,8 +36,6 @@ class CalendarBody extends StatelessWidget {
   }
 }
 
-typedef void SetPageCallback(int page);
-
 class _CalendarControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -43,14 +43,14 @@ class _CalendarControls extends StatelessWidget {
     return Container(
       child: ScopedModelDescendant<CalendarModel>(
         builder: (context, child, model) {
-          final bsDate = _bsDateFromPageIndex(model.calendarPage);
+          final bsDate = BSDate.fromGregorian(model.calendarMonth);
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               IconButton(
                 icon: Icon(Icons.chevron_left),
                 iconSize: headline.fontSize,
-                onPressed: () => model.decrementCalendarPage(),
+                onPressed: () => model.decrementCalendarMonth(),
               ),
               Text(
                 '${bsDate.monthText()} - ${intoDevnagariNumeral(bsDate.year)}',
@@ -59,7 +59,7 @@ class _CalendarControls extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.chevron_right),
                 iconSize: headline.fontSize,
-                onPressed: () => model.incrementCalendarPage(),
+                onPressed: () => model.incrementCalendarMonth(),
               )
             ],
           );
@@ -76,8 +76,9 @@ class _CalendarTable extends StatefulWidget {
 }
 
 class _CalendarTableState extends State<_CalendarTable> {
-  final PageController _pageController =
-      PageController(initialPage: initialPage);
+  final PageController _pageController = PageController(
+    initialPage: _bsDateToPageIndex(BSDate.fromGregorian(DateTime.now())),
+  );
 
   CalendarModel _calendarModel;
 
@@ -89,9 +90,18 @@ class _CalendarTableState extends State<_CalendarTable> {
     _calendarModel.addListener(_handlePageChange);
   }
 
+  /// If there has been a page change in the state, then update the UI to show
+  /// the new month.
   void _handlePageChange() {
-    if (_calendarModel.calendarPage != _pageController.page.round()) {
-      _pageController.jumpToPage(_calendarModel.calendarPage);
+    final controllerDate =
+        _bsDateFromPageIndex(_pageController.page.round()).toGregorian();
+
+    if (_calendarModel.calendarMonth != controllerDate) {
+      final newPageIndex = _bsDateToPageIndex(
+        BSDate.fromGregorian(_calendarModel.calendarMonth),
+      );
+
+      _pageController.jumpToPage(newPageIndex);
     }
   }
 
@@ -128,9 +138,10 @@ class _CalendarTableState extends State<_CalendarTable> {
       builder: (context, child, model) {
         return PageView.builder(
           controller: _pageController,
-          itemCount: maxPageIndex,
+          itemCount: _maxPageIndex,
           itemBuilder: _tableBodyPage,
-          onPageChanged: (page) => model.setCalendarPage(page),
+          onPageChanged: (page) =>
+              model.setCalendarMonth(_bsDateFromPageIndex(page).toGregorian()),
         );
       },
     );
@@ -214,8 +225,8 @@ class _CalendarDayCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final greg = date?.toGregorian();
-    final _isToday = isToday(greg);
-    final _isSaturday = isSaturday(greg);
+    final _isToday = greg != null ? DateUtils.isToday(greg) : false;
+    final _isSaturday = greg != null ? DateUtils.isSaturday(greg) : false;
     final _events = events(date);
     final isHoliday = _events != null ? _events['isHoliday'] == true : false;
     return Container(

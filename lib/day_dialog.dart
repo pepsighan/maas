@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:maas/converter.dart';
 import 'package:maas/data/events/events.dart';
 import 'package:maas/data/translations.dart';
+import 'package:maas/date_utils.dart';
 
 final _radius = 15.0;
 final _circularRadius = Radius.circular(_radius);
@@ -39,8 +40,8 @@ class _DayBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final greg = date.toGregorian();
-    final _isToday = isToday(greg);
-    final _isSaturday = isSaturday(greg);
+    final _isToday = DateUtils.isToday(greg);
+    final _isSaturday = DateUtils.isSaturday(greg);
     final _events = events(date);
     final _isHoliday = _events != null ? _events['isHoliday'] == true : false;
 

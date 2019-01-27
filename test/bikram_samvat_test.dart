@@ -5,7 +5,7 @@ void main() {
   group('Should convert valid gregorian dates to Bikram Samvat', () {
     void matchDates(int year, int month, int day, BSDate bsDate) {
       test('$year-$month-$day', () {
-        expect(BSDate.fromGregorian(year, month, day), bsDate);
+        expect(BSDate.fromGregorian(DateTime.utc(year, month, day)), bsDate);
       });
     }
 
@@ -26,7 +26,7 @@ void main() {
     void outOfRangeTests(year, month, day) {
       test('$year-$month-$day AD', () {
         expect(
-          () => BSDate.fromGregorian(year, month, day),
+          () => BSDate.fromGregorian(DateTime.utc(year, month, day)),
           outOfRange,
         );
       });

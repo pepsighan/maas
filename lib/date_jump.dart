@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
-import 'package:maas/converter.dart';
 import 'package:maas/data/saal.dart';
 import 'package:maas/data/translations.dart';
+import 'package:maas/date_utils.dart';
 
 class DateJumpDialog extends StatelessWidget {
   @override
@@ -154,16 +154,8 @@ class _DateFormState extends State<_DateForm> {
   Widget _gregorianDatePicker() {
     return DateTimePickerFormField(
       format: DateFormat('MMMM d yyyy'),
-      firstDate: DateTime.utc(
-        startGregorianYear,
-        startGregorianMonth,
-        startGregorianDay,
-      ),
-      lastDate: DateTime.utc(
-        endGregorianYear,
-        endGregorianMonth,
-        endGregorianDay,
-      ),
+      firstDate: DateUtils.gregorianStartDate(),
+      lastDate: DateUtils.gregorianEndDate(),
       dateOnly: true,
       editable: false,
       onChanged: (date) {

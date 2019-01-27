@@ -57,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
           builder: (context, child, model) {
             return IconButton(
               icon: Icon(Icons.today),
-              onPressed: () => model.setCalendarPage(initialPage),
+              onPressed: () => model.setCalendarMonth(DateTime.now()),
               tooltip: 'आज',
             );
           },
