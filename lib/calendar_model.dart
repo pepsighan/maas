@@ -24,7 +24,7 @@ class CalendarModel extends Model {
     _setDateIfInRange(DateUtils.incrementCalendarMonth(_calendarMonth));
   }
 
-  /// Decrement the calendar page by 1.
+  /// Decrement the calendar month by 1.
   void decrementCalendarMonth() {
     _setDateIfInRange(DateUtils.decrementCalendarMonth(_calendarMonth));
   }
