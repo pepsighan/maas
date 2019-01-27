@@ -59,7 +59,7 @@ class DateUtils {
   static bool isSaturday(DateTime date) {
     assert(date != null);
 
-    return date?.weekday == 6;
+    return date.weekday == 6;
   }
 
   /// Whether the given date is in the valid Gregorian Range supported by maas.
