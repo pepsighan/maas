@@ -74,7 +74,7 @@ class BSDate {
   // Ends on 2034-04-13 AD
   static BSDate fromGregorian(int year, int month, int day) {
     final date = DateTime.utc(year, month, day);
-    if (!_gregorianInRange(date)) {
+    if (!gregorianInRange(date)) {
       throw DateNotInValidRange();
     }
     final startGregorianDate = DateTime.utc(
@@ -131,7 +131,7 @@ const endGregorianYear = 2034;
 const endGregorianMonth = 4;
 const endGregorianDay = 13;
 
-bool _gregorianInRange(DateTime date) {
+bool gregorianInRange(DateTime date) {
   return ((date.year == startGregorianYear &&
               date.month == startGregorianMonth &&
               date.day >= startGregorianDay) ||
