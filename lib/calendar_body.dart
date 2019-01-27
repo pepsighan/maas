@@ -50,7 +50,7 @@ class _CalendarControls extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.chevron_left),
                 iconSize: headline.fontSize,
-                onPressed: () => model.decrementCalendarMonth(),
+                onPressed: model.decrementCalendarMonth,
               ),
               Text(
                 '${bsDate.monthText()} - ${intoDevnagariNumeral(bsDate.year)}',
@@ -59,7 +59,7 @@ class _CalendarControls extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.chevron_right),
                 iconSize: headline.fontSize,
-                onPressed: () => model.incrementCalendarMonth(),
+                onPressed: model.incrementCalendarMonth,
               )
             ],
           );
