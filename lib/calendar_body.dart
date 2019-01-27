@@ -21,7 +21,7 @@ BSDate _bsDateFromPageIndex(int index) {
 
 /// Convert BSDate to page view index.
 int _bsDateToPageIndex(BSDate date) {
-  return ((date.year - startSaal) * 12) + date.month - 1;
+  return ((date.year - startSaal) * 12) + date.month;
 }
 
 class CalendarBody extends StatelessWidget {
