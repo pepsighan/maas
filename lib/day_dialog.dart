@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:maas/converter.dart';
+import 'package:maas/bs_date.dart';
 import 'package:maas/data/events/events.dart';
 import 'package:maas/data/translations.dart';
 import 'package:maas/date_utils.dart';

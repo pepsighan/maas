@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maas/calendar_model.dart';
-import 'package:maas/converter.dart';
+import 'package:maas/bs_date.dart';
 import 'package:maas/data/events/events.dart';
 import 'package:maas/data/saal.dart';
 import 'package:maas/data/translations.dart';
