@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
+import 'package:maas/bs_date.dart';
+import 'package:maas/calendar_model.dart';
 import 'package:maas/data/saal.dart';
 import 'package:maas/data/translations.dart';
 import 'package:maas/date_utils.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class DateJumpDialog extends StatelessWidget {
   @override
@@ -66,11 +69,19 @@ class _DateFormState extends State<_DateForm> {
           width: double.infinity,
           child: Align(
             alignment: Alignment.centerRight,
-            child: RaisedButton(
-              child: Text('जाऊ'),
-              color: Colors.blue,
-              textColor: Colors.white,
-              onPressed: () {},
+            child: ScopedModelDescendant<CalendarModel>(
+              builder: (context, child, model) {
+                return RaisedButton(
+                  child: Text('जाऊ'),
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  onPressed: () => _isBSDate
+                      ? model.setCalendarMonth(
+                          BSDate(_year, _month, _day).toGregorian())
+                      : model
+                          .setCalendarMonth(DateTime.utc(_year, _month, _day)),
+                );
+              },
             ),
           ),
         )
