@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:maas/calendar_model.dart';
 import 'package:maas/converter.dart';
