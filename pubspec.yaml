@@ -10,8 +10,7 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^0.1.2
   quiver: ^2.0.1
-  redux: ^3.0.0
-  flutter_redux: ^0.5.2
+  scoped_model: ^1.0.1
   datetime_picker_formfield: ^0.1.6
 
 dev_dependencies:
